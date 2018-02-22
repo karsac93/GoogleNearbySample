@@ -66,9 +66,18 @@ public class MainActivity extends AppCompatActivity {
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //stopDiscovery();
+                connectionsClient.stopDiscovery();
                 startAdvertising();
+                if (clientEndPointId != null) {
+                    String msg = String.valueOf(editText.getText());
+                    if (msg != null && msg.length() > 0)
+                        try {
+                            connectionsClient.sendPayload(clientEndPointId, Payload.fromBytes(msg.getBytes("UTF-8")));
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        }
 
+                }
             }
         });
 
@@ -79,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
     private final EndpointDiscoveryCallback endpointDiscoveryCallback = new EndpointDiscoveryCallback() {
         @Override
         public void onEndpointFound(String endpoint, DiscoveredEndpointInfo discoveredEndpointInfo) {
-            Log.d(TAG, "In onEndpointFound:"+ endpoint + " Info:" + discoveredEndpointInfo.getEndpointName());
+            Log.d(TAG, "In onEndpointFound:" + endpoint + " Info:" + discoveredEndpointInfo.getEndpointName());
             connectionsClient.requestConnection(RECEIVER, endpoint, connectionLifecycleCallback);
         }
 
@@ -88,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
 
         }
     };
+
     private void startDiscovery() {
         connectionsClient.startDiscovery(getPackageName(), endpointDiscoveryCallback, new DiscoveryOptions(STRATEGY));
     }
@@ -134,10 +144,10 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onDisconnected(String s) {
-                connectionsClient.stopAdvertising();
-                textView.setText(getString(R.string.display_text));
-                startDiscovery();
-                Log.d(TAG, "Disconnected");
+            connectionsClient.stopAdvertising();
+            textView.setText(getString(R.string.display_text));
+            startDiscovery();
+            Log.d(TAG, "Disconnected");
         }
     };
 
