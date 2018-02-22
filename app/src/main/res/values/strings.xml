@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">GoogleNearbySample</string>
+    <string name="display_text">The message is displayed here</string>
+</resources>
